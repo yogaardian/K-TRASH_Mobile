@@ -1,0 +1,45 @@
+# Environment files
+backend/.env
+backend/.env.*
+backend/.env.local
+backend/.env.*.local
+.env
+.env.*
+
+# Node dependencies and runtime artifacts
+backend/node_modules/
+backend/package-lock.json
+backend/dist/
+backend/coverage/
+backend/uploads/
+backend/*.sqlite
+backend/*.db
+
+# Flutter / Dart build outputs and local caches
+userendpetugas/build/
+userendpetugas/.dart_tool/
+userendpetugas/.flutter-plugins
+userendpetugas/.flutter-plugins-dependencies
+userendpetugas/.packages
+userendpetugas/.fvm/
+userendpetugas/android/.gradle/
+userendpetugas/ios/Pods/
+userendpetugas/ios/.symlinks/
+userendpetugas/windows/flutter/ephemeral/
+userendpetugas/linux/flutter/ephemeral/
+userendpetugas/macos/Flutter/ephemeral/
+
+# Local analysis / temporary artifacts
+userendpetugas/analyze*.txt
+userendpetugas/buildlog.txt
+userendpetugas/*.tmp
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+backend/*.log

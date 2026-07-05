@@ -1,4 +1,4 @@
-package com.example.user
+package com.banktrash.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
-
-import './models/order.dart';
+import 'models/order.dart';
+import '../utils/secure_storage_helper.dart';
+import '../services/api_service.dart';
 import 'akun_page.dart';
+import 'detail_order.dart';
 import 'riwayat_page_petugas.dart';
 
 const primaryColor = Color(0xFF4CAF50);
-const BASE_URL = 'http://10.53.84.142:3000';
 
 class DashboardPetugas extends StatefulWidget {
   final String nama;
@@ -41,11 +41,14 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
   final MapController _mapController = MapController();
 
   Timer? _timer;
+  int? _driverId;
+  String? _driverName;
 
   @override
   void initState() {
     super.initState();
     _initializeLocationTracking();
+    _loadDriverInfo();
     _fetchOrders();
     _startPolling();
   }
@@ -99,20 +102,40 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
     });
   }
 
+  Future<void> _loadDriverInfo() async {
+    try {
+      final userJson = await SecureStorageHelper.getUserData();
+      if (userJson != null) {
+        final parsed = _parseStoredUserData(userJson);
+        if (parsed != null) {
+          setState(() {
+            _driverId = parsed['id'] is int ? parsed['id'] as int : int.tryParse('${parsed['id']}');
+            _driverName = parsed['nama'] ?? parsed['name']?.toString();
+          });
+        }
+      }
+    } catch (_) {
+      // ignore parsing errors
+    }
+  }
+
+  Map<String, dynamic>? _parseStoredUserData(String userJson) {
+    try {
+      return jsonDecode(userJson) as Map<String, dynamic>;
+    } on FormatException catch (_) {
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _fetchOrders() async {
     if (_isFetching) return;
     _isFetching = true;
 
     try {
-      final res = await http.get(Uri.parse('$BASE_URL/orders/pending'));
-      if (res.statusCode != 200) {
-        throw Exception('Server error: ${res.statusCode}');
-      }
-
-      final decoded = jsonDecode(res.body);
-      if (decoded is! List) {
-        throw Exception('Format data salah');
-      }
+      final token = await SecureStorageHelper.getToken();
+      final decoded = await ApiService.getPendingOrders(token);
 
       final newOrders = <Order>[];
       final newLocations = <int, LatLng>{};
@@ -191,14 +214,9 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
 
   Future<void> _acceptOrder(Order order) async {
     try {
-      final response = await http.patch(
-        Uri.parse('$BASE_URL/orders/accept/${order.id}'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'driver_id': widget.driverId}),
-      );
-
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200 && data['status'] == 'success') {
+      final token = await SecureStorageHelper.getToken();
+      final data = await ApiService.acceptOrder(order.id!, _driverId ?? widget.driverId, token);
+      if (data['status'] == 'success') {
         setState(() {
           activeOrder = order;
           activeOrderLocation =
@@ -207,6 +225,17 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
           errorMessage = null;
         });
         _sendLocationToBackend();
+
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DetailOrderPage(
+              order: activeOrder!,
+              driverId: _driverId ?? widget.driverId,
+            ),
+          ),
+        );
         return;
       }
 
@@ -222,33 +251,44 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
   }
 
   void _rejectOrder(Order order) {
-    setState(() {
-      orders.removeWhere((element) => element.id == order.id);
-    });
+    () async {
+      try {
+        final token = await SecureStorageHelper.getToken();
+        await ApiService.rejectOrder(order.id!, _driverId ?? widget.driverId, token);
+      } catch (_) {}
+      if (!mounted) return;
+      setState(() {
+        orders.removeWhere((element) => element.id == order.id);
+      });
+    }();
   }
 
-  void _clearActiveOrder() {
-    setState(() {
-      activeOrder = null;
-      activeOrderLocation = null;
-    });
+  Future<void> _viewOrderDetail(Order order) async {
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetailOrderPage(
+          order: order,
+          driverId: _driverId ?? widget.driverId,
+        ),
+      ),
+    );
   }
 
   Future<void> _sendLocationToBackend() async {
     if (activeOrder == null) return;
 
     try {
-      await http.post(
-        Uri.parse('$BASE_URL/driver/location'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'driver_id': widget.driverId,
-          'order_id': activeOrder!.id,
-          'lat': driverLocation.latitude,
-          'lng': driverLocation.longitude,
-        }),
+      final token = await SecureStorageHelper.getToken();
+      await ApiService.sendDriverLocation(
+        _driverId ?? widget.driverId,
+        activeOrder!.id!,
+        driverLocation.latitude,
+        driverLocation.longitude,
+        token,
       );
-    } catch (e) {
+    } catch (_) {
       // Handle silently
     }
   }
@@ -345,7 +385,7 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.nama,
+                  _driverName ?? widget.nama,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -371,7 +411,7 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
               ),
               const SizedBox(width: 8),
               Switch(
-                activeColor: Colors.white,
+                activeThumbColor: Colors.white,
                 activeTrackColor: Colors.white30,
                 value: isOnline,
                 onChanged: (value) {
@@ -538,6 +578,7 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
               isOnline: isOnline,
               onTolak: () => _rejectOrder(order),
               onTerima: () => _acceptOrder(order),
+              onDetail: () => _viewOrderDetail(order),
             ),
           ),
       ],
@@ -592,8 +633,12 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
           const SizedBox(height: 16),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-            onPressed: _clearActiveOrder,
-            child: const Text('Selesaikan order'),
+            onPressed: () {
+              if (activeOrder != null) {
+                _viewOrderDetail(activeOrder!);
+              }
+            },
+            child: const Text('Lihat Detail'),
           ),
         ],
       ),
@@ -625,6 +670,7 @@ class OrderCard extends StatelessWidget {
   final bool isOnline;
   final VoidCallback onTolak;
   final VoidCallback onTerima;
+  final VoidCallback onDetail;
 
   const OrderCard({
     super.key,
@@ -632,6 +678,7 @@ class OrderCard extends StatelessWidget {
     required this.isOnline,
     required this.onTolak,
     required this.onTerima,
+    required this.onDetail,
   });
 
   @override
@@ -704,3 +751,6 @@ class OrderCard extends StatelessWidget {
     );
   }
 }
+
+
+

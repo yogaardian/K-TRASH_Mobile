@@ -1,0 +1,229 @@
+.user-sidebar,
+.sidebar {
+  width: 230px;
+  background: #ffffff;
+  border-right: 1px solid #e8f5e9;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 9999;
+}
+
+.user-sidebar-logo,
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f9f2;
+}
+
+.user-sidebar-logo-img {
+  width: 36px;
+  height: 36px;
+}
+
+.user-sidebar-logo-text {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #16a34a;
+}
+
+.user-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  gap: 2px;
+  flex: 1;
+}
+
+.user-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  font-size: 0.92rem;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.user-sidebar-item:hover, .user-sidebar-item.active {
+  background-color: #dcfce7;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.user-sidebar-badge,
+.sidebar-badge {
+  margin-left: auto;
+  background-color: #16a34a;
+  color: white;
+  font-size: 0.7rem;
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+
+.user-sidebar-leaf,
+.sidebar-leaf {
+  padding: 20px 24px;
+  font-size: 4rem;
+  opacity: 0.1;
+}
+
+
+/* Profile nav item style (flat, no bg, icon) */
+.user-sidebar-profile-nav {
+  margin-top: 8px;
+  background: none !important;
+  color: #555;
+  font-weight: 700;
+  border-radius: 0.6rem;
+  box-shadow: none;
+  cursor: pointer;
+}
+.user-sidebar-profile-nav:hover {
+  color: #16a34a;
+  background: #f0fdf4 !important;
+}
+
+.user-sidebar-collapse-btn {
+  position: absolute;
+  top: 50%;
+  right: -18px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(2,6,23,0.12);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.user-sidebar.collapsed {
+  width: 80px;
+}
+
+.user-sidebar.collapsed .user-sidebar-logo-text {
+  display: none;
+}
+
+.user-sidebar.collapsed .user-sidebar-item {
+  justify-content: center;
+}
+
+.user-sidebar.collapsed .user-sidebar-item-icon {
+  margin: 0;
+}
+
+.user-sidebar.collapsed .user-sidebar-item-label {
+  display: none;
+}
+
+.user-sidebar.collapsed .user-sidebar-profile-toggle {
+  width: 60px;
+  padding: 8px;
+  font-size: 0.8rem;
+}
+
+.user-sidebar-hamburger-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10001;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #16a34a;
+  color: white;
+  font-size: 1.4rem;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.22);
+  cursor: pointer;
+}
+
+.user-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.user-sidebar-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.user-sidebar.mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  max-width: 100%;
+  height: 100vh;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  z-index: 9999;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+}
+
+.user-sidebar.mobile.open {
+  transform: translateX(0);
+}
+
+.user-sidebar.mobile .user-sidebar-collapse-btn {
+  display: none;
+}
+
+.user-sidebar.mobile .user-sidebar-leaf {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .user-sidebar {
+    width: 260px;
+  }
+
+  .user-sidebar.collapsed {
+    width: 260px;
+  }
+}
+
+/* When mobile sidebar is opened via hamburger, always show labels
+   even if `collapsed` class exists (persisted state). */
+.user-sidebar.mobile.open {
+  width: 260px;
+}
+
+.user-sidebar.mobile.open .user-sidebar-logo-text,
+.user-sidebar.mobile.open .user-sidebar-item-label,
+.user-sidebar.mobile.open .user-sidebar-profile-toggle {
+  display: block;
+}
+
+.user-sidebar.mobile.open .user-sidebar-item {
+  justify-content: flex-start;
+  padding-left: 16px;
+}
+
+.user-sidebar.mobile.open .user-sidebar-item-icon {
+  margin: 0 12px 0 0;
+}
+
+.user-sidebar.mobile.open .user-sidebar-leaf {
+  display: none;
+}

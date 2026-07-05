@@ -68,42 +68,6 @@ function FixedPlugin({
               onChange={setHasImage}
             />
           </li>
-          <li className="adjustments-line mt-3">
-            <p>Filters</p>
-            <div className="pull-right">
-              <Badge
-                variant="secondary"
-                className={color === "black" ? "active" : ""}
-                onClick={() => setColor("black")}
-              ></Badge>
-              <Badge
-                variant="azure"
-                className={color === "azure" ? "active" : ""}
-                onClick={() => setColor("azure")}
-              ></Badge>
-              <Badge
-                variant="green"
-                className={color === "green" ? "active" : ""}
-                onClick={() => setColor("green")}
-              ></Badge>
-              <Badge
-                variant="orange"
-                className={color === "orange" ? "active" : ""}
-                onClick={() => setColor("orange")}
-              ></Badge>
-              <Badge
-                variant="red"
-                className={color === "red" ? "active" : ""}
-                onClick={() => setColor("red")}
-              ></Badge>
-              <Badge
-                variant="purple"
-                className={color === "purple" ? "active" : ""}
-                onClick={() => setColor("purple")}
-              ></Badge>
-            </div>
-            <div className="clearfix"></div>
-          </li>
           <li className="header-title">Sidebar Images</li>
           <li className={image === sideBarImage1 ? "active" : ""}>
             <a
@@ -152,70 +116,6 @@ function FixedPlugin({
             >
               <img alt="..." src={sideBarImage4}></img>
             </a>
-          </li>
-          <li className="button-container">
-            <div>
-              <Button
-                block
-                className="btn-fill"
-                href="http://www.creative-tim.com/product/light-bootstrap-dashboard-react"
-                rel="noopener noreferrer"
-                target="_blank"
-                variant="info"
-              >
-                Download, it's free!
-              </Button>
-            </div>
-          </li>
-          <li className="button-container">
-            <div>
-              <Button
-                block
-                className="btn-fill"
-                href="http://www.creative-tim.com/product/light-bootstrap-dashboard-react"
-                rel="noopener noreferrer"
-                target="_blank"
-                variant="default"
-              >
-                Checkout docs.
-              </Button>
-            </div>
-          </li>
-          <li className="header-title pro-title text-center">
-            Want more components?
-          </li>
-          <li className="button-container">
-            <div>
-              <Button
-                block
-                className="btn-fill"
-                href="http://www.creative-tim.com/product/light-bootstrap-dashboard-pro-react"
-                rel="noopener noreferrer"
-                target="_blank"
-                variant="primary"
-              >
-                Get The PRO Version!
-              </Button>
-            </div>
-          </li>
-          <li className="header-title" id="sharrreTitle">
-            Thank you for sharing!
-          </li>
-          <li className="button-container mb-4">
-            <Button
-              className="btn-social btn-outline btn-round sharrre"
-              id="twitter"
-              variant="twitter"
-            >
-              <i className="fab fa-twitter"></i>· 256
-            </Button>
-            <Button
-              className="btn-social btn-outline btn-round sharrre"
-              id="facebook"
-              variant="facebook"
-            >
-              <i className="fab fa-facebook-square"></i>· 426
-            </Button>
           </li>
         </Dropdown.Menu>
       </Dropdown>

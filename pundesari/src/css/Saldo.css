@@ -1,0 +1,500 @@
+.saldo-content {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  background: #f6f8f6;
+  min-height: 100vh;
+}
+
+/* HEADER */
+
+.content-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #111827;
+
+  margin-bottom: 8px;
+}
+
+.content-header p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* TOPBAR EXTRA */
+
+.greeting-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: white;
+
+  padding: 12px 18px;
+
+  border-radius: 18px;
+
+  border: 1px solid #edf2ee;
+
+  box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+}
+
+.user-emoji {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 12px;
+
+  background: #f0fdf4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1rem;
+}
+
+.greeting-text p {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.greeting-text span {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+/* STATS */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+/* MAIN SALDO */
+
+.main-saldo-card {
+  background: linear-gradient(
+    135deg,
+    #84cc16,
+    #16a34a
+  );
+
+  border-radius: 26px;
+
+  padding: 28px;
+
+  color: white;
+
+  position: relative;
+
+  overflow: hidden;
+
+  min-height: 170px;
+
+  display: flex;
+  align-items: center;
+
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.22);
+}
+
+.card-info p {
+  opacity: 0.95;
+  font-weight: 500;
+}
+
+.card-info h2 {
+  font-size: 2.4rem;
+  font-weight: 800;
+
+  margin-top: 10px;
+}
+
+.card-icon-bg {
+  position: absolute;
+
+  left: 28px;
+  top: 28px;
+
+  width: 58px;
+  height: 58px;
+
+  border-radius: 18px;
+
+  background: rgba(255,255,255,0.18);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.5rem;
+}
+
+.recycle-bg {
+  position: absolute;
+
+  right: 18px;
+  bottom: -10px;
+
+  font-size: 6rem;
+
+  opacity: 0.12;
+}
+
+/* SUMMARY */
+
+.summary-card {
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 24px;
+
+  border: 1px solid #edf2ee;
+
+  box-shadow: 0 3px 15px rgba(0,0,0,0.03);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.summary-card p {
+  color: #6b7280;
+  font-size: 0.88rem;
+
+  margin-bottom: 8px;
+}
+
+.summary-card h3 {
+  font-size: 1.7rem;
+  font-weight: 800;
+
+  color: #111827;
+
+  margin-bottom: 5px;
+}
+
+.summary-card span {
+  color: #9ca3af;
+  font-size: 0.78rem;
+}
+
+.icon-circle {
+  width: 52px;
+  height: 52px;
+
+  border-radius: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.3rem;
+
+  margin-bottom: 18px;
+}
+
+.icon-circle.green {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.icon-circle.red {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.icon-circle.blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* TABLE */
+
+.table-container {
+  background: white;
+
+  border-radius: 26px;
+
+  border: 1px solid #edf2ee;
+
+  overflow: hidden;
+
+  box-shadow: 0 3px 15px rgba(0,0,0,0.03);
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 25px 28px;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* TABS */
+
+.tabs {
+  display: flex;
+  gap: 28px;
+}
+
+.tab {
+  background: none;
+  border: none;
+
+  font-weight: 700;
+  color: #9ca3af;
+
+  cursor: pointer;
+
+  padding-bottom: 14px;
+
+  transition: 0.3s;
+}
+
+.tab.active {
+  color: #16a34a;
+  border-bottom: 3px solid #16a34a;
+}
+
+/* FILTERS */
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.filter-btn {
+  border: 1px solid #e5e7eb;
+
+  background: white;
+
+  padding: 10px 16px;
+
+  border-radius: 12px;
+
+  font-weight: 600;
+  color: #374151;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.filter-btn:hover {
+  background: #f9fafb;
+}
+
+/* TABLE */
+
+.riwayat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.riwayat-table thead {
+  background: #f9fafb;
+}
+
+.riwayat-table th {
+  text-align: left;
+
+  padding: 16px 28px;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  color: #6b7280;
+}
+
+.riwayat-table td {
+  padding: 18px 28px;
+
+  border-top: 1px solid #f3f4f6;
+
+  vertical-align: middle;
+}
+
+/* WAKTU */
+
+.col-waktu p {
+  font-weight: 700;
+  color: #374151;
+}
+
+.col-waktu span {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* DESC */
+
+.col-desc {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.desc-icon {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 14px;
+
+  background: #f0fdf4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.1rem;
+}
+
+.desc-text p {
+  font-weight: 700;
+  color: #111827;
+
+  margin-bottom: 3px;
+}
+
+.desc-text span {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* BADGE */
+
+.badge-jenis {
+  padding: 6px 14px;
+
+  border-radius: 999px;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.badge-jenis.pemasukan {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-jenis.pengeluaran {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-status {
+  background: #dcfce7;
+  color: #166534;
+
+  padding: 6px 14px;
+
+  border-radius: 999px;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* NOMINAL */
+
+.col-nominal {
+  font-weight: 700;
+  color: #374151;
+}
+
+.pengeluaran-text {
+  color: #dc2626;
+}
+
+/* FOOTER */
+
+.table-footer-info {
+  padding: 18px 28px;
+
+  border-top: 1px solid #f3f4f6;
+
+  font-size: 0.78rem;
+
+  color: #9ca3af;
+}
+
+/* PROFILE SMALL */
+
+.user-profile-small {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  cursor: pointer;
+}
+
+.user-profile-small img {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid #bbf7d0;
+}
+
+.user-meta .name {
+  font-weight: 700;
+  color: #111827;
+}
+
+.user-meta .id {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1200px) {
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .saldo-content {
+    padding: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .riwayat-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .content-header h1 {
+    font-size: 1.8rem;
+  }
+
+}

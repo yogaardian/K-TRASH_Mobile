@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../constants/api_constants.dart';
 import 'tracking_petugas_page.dart';
+
+final String _backendBaseUrl = ApiConstants.baseUrl;
 
 class MencariPetugasPage extends StatefulWidget {
   // 1. Tambahkan parameter username di constructor agar bisa menerima data dari halaman sebelumnya
@@ -18,8 +21,6 @@ class MencariPetugasPage extends StatefulWidget {
   @override
   State<MencariPetugasPage> createState() => _MencariPetugasPageState();
 }
-
-const String _backendBaseUrl = 'http://10.53.84.142:3000';
 
 class _MencariPetugasPageState extends State<MencariPetugasPage> {
   Timer? _orderStatusTimer;

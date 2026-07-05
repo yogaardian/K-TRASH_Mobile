@@ -1,40 +1,30 @@
 import 'package:flutter/material.dart';
-import 'pickup_page.dart';
+import 'pickup_page2.dart';
 import 'hasil_simpan_page.dart';
 import 'riwayat_page.dart';
 import 'data/user_data.dart';
 import 'profil_page.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import 'services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // UNTUK BIASA (plastik, kertas, dll)
-Future<List> fetchHarga(String jenis) async {
-  final response = await http.get(
-    Uri.parse('http://10.53.84.142:3000/harga/$jenis'),
-  );
 
-  return jsonDecode(response.body);
+// Gunakan ApiService untuk semua API
+
+Future<List<dynamic>> fetchHarga(String jenis) async {
+  try {
+    return await ApiService.getHarga(jenis);
+  } catch (e) {
+    return [];
+  }
 }
 
-// UNTUK LAINNYA (pakai sub)
-Future<List> fetchHargaSub(String jenis, String sub) async {
-  final response = await http.get(
-    Uri.parse('http://10.53.84.142:3000/harga/$jenis/$sub'),
-  );
-
-  return jsonDecode(response.body);
-}
-
-// FETCH WALLET BALANCE
-Future<Map<String, dynamic>> fetchWalletBalance(int userId) async {
-  final response = await http.get(
-    Uri.parse('http://10.53.84.142:3000/wallet/$userId'),
-  );
-
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to load balance');
+Future<List<dynamic>> fetchHargaSub(String jenis, String sub) async {
+  try {
+    return await ApiService.getHargaSub(jenis, sub);
+  } catch (e) {
+    return [];
   }
 }
 
@@ -69,9 +59,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> _fetchBalance() async {
     try {
-      final data = await fetchWalletBalance(widget.userId);
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
+      final data = await ApiService.getUserBalance(widget.userId, token);
+      final num balanceValue = (data['balance'] ?? data['saldo'] ?? data['total_balance'] ?? 0) as num;
       setState(() {
-        balance = (data['balance'] as num).toDouble();
+        balance = balanceValue.toDouble();
         isBalanceLoading = false;
         balanceError = null;
       });
@@ -650,13 +643,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                      user: UserProfile(
-                        name: widget.username,
-                        email: "${widget.username}@gmail.com",
-                        phoneNumber: widget.userId.toString(),
-                      ),
-                    ),
+                    builder: (context) => const ProfilePage(),
                   ),
                 );
               },

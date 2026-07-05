@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services/api_service.dart';
 
 import 'register.dart';
 import 'dashboard.dart';
@@ -258,6 +258,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+
   Future<void> _handleLogin(BuildContext context) async {
     String usernameEmail = usernameEmailController.text.trim();
     String password = passwordController.text;
@@ -267,41 +268,37 @@ class LoginPage extends StatelessWidget {
       return;
     }
 
-    final response = await http.post(
-      Uri.parse('http://10.53.84.142:3000/login'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": usernameEmail, "password": password}),
-    );
+    try {
+      final data = await ApiService.login(usernameEmail, password);
+      if (data['message'] == 'Login successful' && data['user'] != null) {
+        final user = data['user'];
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLogin', true);
+        await prefs.setString('nama', user['nama'] ?? '');
+        await prefs.setString('role', user['role'] ?? '');
+        await prefs.setInt('userId', user['id']);
+        await prefs.setString('token', data['token'] ?? '');
 
-    final data = jsonDecode(response.body);
-
-    if (data['status'] == 'success') {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLogin', true);
-      await prefs.setString('nama', data['nama']);
-      await prefs.setString('role', data['role']);
-
-      if (data['role'] == 'admin' ||
-          data['role'] == 'petugas' ||
-          data['role'] == 'driver') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                DashboardPetugas(nama: data['nama'], driverId: data['id']),
-          ),
-        );
+        if (user['role'] == 'admin' || user['role'] == 'petugas' || user['role'] == 'driver') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DashboardPetugas(nama: user['nama'], driverId: user['id']),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DashboardPage(username: user['nama'], userId: user['id']),
+            ),
+          );
+        }
       } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                DashboardPage(username: data['nama'], userId: data['id']),
-          ),
-        );
+        _showSnackbar(context, data['message'] ?? 'Login gagal');
       }
-    } else {
-      _showSnackbar(context, 'Login gagal');
+    } catch (e) {
+      _showSnackbar(context, 'Gagal terhubung ke server');
     }
   }
 

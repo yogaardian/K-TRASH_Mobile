@@ -15,14 +15,17 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import Dashboard from "views/Dashboard.js";
-import UserProfile from "views/UserProfile.js";
-import TableList from "views/TableList.js";
-import Typography from "views/Typography.js";
-import Icons from "views/Icons.js";
-import Maps from "views/Maps.js";
-import Notifications from "views/Notifications.js";
-import Upgrade from "views/Upgrade.js";
+import Dashboard from "views/admin/Dashboard.js";
+import UserProfile from "views/admin/UserProfile.js";
+import Petugas from "views/admin/Petugas.js";
+import WasteManagement from "views/admin/WasteManagement.js";
+import Transaksi from "views/admin/Transaksi.js";
+import Maps from "views/admin/Maps.js";
+import Pengaturan from "views/admin/Pengaturan.js";
+import Saldo from "views/admin/SaldoAdmin.js";
+import MarketplaceAdmin from "views/admin/MarketplaceAdmin.js";
+
+
 
 const dashboardRoutes = [
   {
@@ -40,38 +43,52 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/table",
+    path: "/petugas",
     name: "Petugas",
     icon: "nc-icon nc-notes",
-    component: TableList,
+    component: Petugas,
     layout: "/admin"
   },
   {
-    path: "/typography",
+    path: "/waste-management",
     name: "Harga Sampah",
     icon: "nc-icon nc-paper-2",
-    component: Typography,
+    component: WasteManagement,
     layout: "/admin"
   },
   {
-    path: "/icons",
+    path: "/Transaksi",
     name: "Transaksi",
     icon: "nc-icon nc-atom",
-    component: Icons,
+    component: Transaksi,
+    layout: "/admin"
+  },
+  // {
+  //   path: "/maps",
+  //   name: "Status Transaksi",
+  //   icon: "nc-icon nc-pin-3",
+  //   component: Maps,
+  //   layout: "/admin"
+  // },
+{
+  path: "/saldo",
+  name: "Saldo",
+  icon: "nc-icon nc-money-coins",
+  component: Saldo,
+  layout: "/admin"
+},
+  {
+    path: "/marketplace",
+    name: "Marketplace",
+    icon: "nc-icon nc-cart-simple",
+    component: MarketplaceAdmin,
     layout: "/admin"
   },
   {
-    path: "/maps",
-    name: "Status Transaksi",
-    icon: "nc-icon nc-pin-3",
-    component: Maps,
-    layout: "/admin"
-  },
-  {
-    path: "/notifications",
+    path: "/Pengaturan",
     name: "Pengaturan",
     icon: "nc-icon nc-bell-55",
-    component: Notifications,
+    component: Pengaturan,
     layout: "/admin"
   }
 ];

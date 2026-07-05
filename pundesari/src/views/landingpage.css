@@ -1,0 +1,458 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── ROOT VARIABLES ─────────────────────────────────── */
+:root {
+  --green-primary: #16a34a;
+  --green-dark: #15803d;
+  --green-light: #dcfce7;
+  --green-text: #166534;
+  --gray-soft: #f9fafb;
+  --gray-text: #6b7280;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.07);
+  --shadow-hover: 0 8px 36px rgba(22, 163, 74, 0.15);
+  --radius-card: 1.5rem;
+  --radius-btn: 0.75rem;
+}
+
+/* ─── BASE ───────────────────────────────────────────── */
+.landing-page {
+  @apply bg-white min-h-screen text-gray-800;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ─── NAVBAR ─────────────────────────────────────────── */
+/* ─── NAVBAR ─────────────────────────────────────────── */
+.navbar {
+  @apply w-full bg-white sticky top-0 z-50;
+  box-shadow: 0 1px 0 #e5e7eb;
+}
+
+.navbar-container {
+  @apply max-w-7xl mx-auto flex items-center justify-between;
+  padding: 1.2rem 3rem;
+}
+
+/* Logo */
+.logo-wrapper {
+  @apply flex items-center;
+  gap: 0.9rem;
+}
+
+.logo-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.logo-text {
+  @apply text-3xl font-bold;
+  color: var(--green-primary);
+  line-height: 1;
+}
+
+/* Menu */
+.nav-menu {
+  @apply hidden md:flex items-center;
+  gap: 3.5rem;
+  list-style: none;
+  margin-left: 4rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-menu li {
+  @apply cursor-pointer transition-colors duration-200 hover:text-green-600;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.nav-menu .active {
+  color: var(--green-primary);
+  font-weight: 700;
+  border-bottom: 3px solid var(--green-primary);
+  padding-bottom: 6px;
+}
+
+/* Login Button */
+.login-btn {
+  @apply flex items-center text-white font-semibold transition-all duration-300;
+  background-color: var(--green-primary);
+
+  padding: 0.95rem 1.7rem;
+  border-radius: 16px;
+  margin-left: 3rem;
+  white-space: nowrap;
+}
+
+.login-btn:hover {
+  background-color: var(--green-dark);
+  transform: translateY(-1px);
+}
+
+.login-icon {
+  font-size: 0.9rem;
+}
+
+/* ─── HERO ───────────────────────────────────────────── */
+.hero-section {
+  @apply max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center;
+}
+
+.badge {
+  @apply inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full mb-6;
+  background-color: var(--green-light);
+  color: var(--green-text);
+}
+
+.hero-title {
+  @apply font-bold leading-tight;
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  color: #111827;
+}
+
+.hero-title span {
+  color: var(--green-primary);
+}
+
+.hero-description {
+  @apply text-gray-500 text-lg mt-6 leading-relaxed;
+  max-width: 460px;
+}
+
+.hero-buttons {
+  @apply flex flex-wrap gap-4 mt-8;
+}
+
+.primary-btn {
+  @apply text-white font-semibold px-7 py-4 transition-all duration-300;
+  background-color: var(--green-primary);
+  border-radius: var(--radius-btn);
+  font-size: 1rem;
+}
+
+.primary-btn:hover {
+  background-color: var(--green-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.3);
+}
+
+.secondary-btn {
+  @apply font-semibold px-7 py-4 transition-all duration-300;
+  border: 2px solid var(--green-primary);
+  color: var(--green-primary);
+  border-radius: var(--radius-btn);
+  background: transparent;
+  font-size: 1rem;
+}
+
+.secondary-btn:hover {
+  background-color: var(--green-light);
+}
+
+.hero-features {
+  @apply flex flex-wrap gap-8 mt-10;
+}
+
+.feature-item {
+  @apply flex items-center gap-3 text-sm text-gray-600;
+}
+
+.feature-icon {
+  @apply w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0;
+  background-color: var(--green-light);
+}
+
+.hero-right {
+  @apply flex justify-center;
+}
+
+.hero-image {
+  @apply w-full object-contain;
+  max-width: 580px;
+}
+
+/* ─── FITUR UTAMA ────────────────────────────────────── */
+.feature-section {
+  @apply px-6 py-20;
+  background-color: #fafafa;
+}
+
+.feature-section > * {
+  @apply max-w-7xl mx-auto;
+}
+
+.section-title {
+  @apply text-center mb-14 max-w-7xl mx-auto;
+}
+
+.section-badge {
+  @apply inline-block text-sm font-semibold px-5 py-2 rounded-full;
+  background-color: var(--green-light);
+  color: var(--green-primary);
+  border: 1px solid #bbf7d0;
+}
+
+.section-title h2 {
+  @apply font-bold mt-5 leading-snug text-gray-900;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+
+.feature-cards {
+  @apply grid md:grid-cols-3 gap-8 max-w-7xl mx-auto;
+}
+
+.feature-card {
+  @apply bg-white p-8 flex flex-col transition-all duration-300;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid #f0fdf4;
+}
+
+.feature-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+}
+
+.card-icon-wrap {
+  @apply w-16 h-16 rounded-2xl flex items-center justify-center mb-5;
+  background-color: var(--green-light);
+}
+
+.card-icon {
+  font-size: 2rem;
+}
+
+.feature-card h3 {
+  @apply text-xl font-bold mb-3 text-gray-900;
+}
+
+.feature-card p {
+  @apply text-gray-500 leading-relaxed mb-6 flex-1;
+  font-size: 0.95rem;
+}
+
+.card-btn {
+  @apply w-full py-3 font-semibold transition-all duration-300;
+  background-color: #f0fdf4;
+  color: var(--green-primary);
+  border-radius: var(--radius-btn);
+  border: 1px solid #bbf7d0;
+  font-size: 0.95rem;
+}
+
+.card-btn:hover {
+  background-color: var(--green-light);
+  color: var(--green-dark);
+}
+
+/* ─── CARA KERJA ─────────────────────────────────────── */
+.work-section {
+  @apply max-w-7xl mx-auto px-6 py-20;
+}
+
+.work-header {
+  @apply text-center mb-14;
+}
+
+.work-header h2 {
+  @apply font-bold text-gray-900;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.work-header p {
+  @apply text-gray-500 mt-2 text-lg;
+}
+
+.work-steps {
+  @apply flex items-start justify-center gap-2 flex-wrap md:flex-nowrap;
+}
+
+.step {
+  @apply flex flex-col items-center text-center;
+  flex: 1;
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.step-illustration {
+  @apply w-20 h-20 rounded-2xl flex items-center justify-center mb-4;
+  background-color: var(--green-light);
+  border: 2px solid #bbf7d0;
+}
+
+.step-emoji {
+  font-size: 2.2rem;
+}
+
+.step-number {
+  @apply w-9 h-9 rounded-full text-white font-bold text-base flex items-center justify-center mb-3;
+  background-color: var(--green-primary);
+}
+
+.step h4 {
+  @apply font-bold text-gray-900 mb-2;
+  font-size: 1rem;
+}
+
+.step p {
+  @apply text-gray-500 text-sm leading-relaxed;
+}
+
+.step-arrow {
+  @apply text-green-400 font-bold hidden md:flex items-center self-start;
+  margin-top: 2.5rem;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── TENTANG KAMI ───────────────────────────────────── */
+.about-section {
+  @apply px-6 py-20;
+  background-color: #fafafa;
+}
+
+.about-container {
+  @apply max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center;
+}
+
+.about-left h2 {
+  @apply font-bold text-gray-900 mt-5 mb-6 leading-snug;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.about-left > p {
+  @apply text-gray-500 text-lg leading-relaxed mb-8;
+}
+
+.about-features {
+  @apply space-y-6;
+}
+
+.about-feature {
+  @apply flex items-start gap-4;
+}
+
+.feature-check {
+  @apply w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold;
+  background-color: var(--green-primary);
+  font-size: 1rem;
+}
+
+.about-feature h4 {
+  @apply font-bold text-gray-900 mb-1;
+}
+
+.about-feature p {
+  @apply text-gray-500 text-sm;
+}
+
+.about-right {
+  @apply grid grid-cols-1 gap-6;
+}
+
+.about-card {
+  @apply bg-white p-8 rounded-2xl text-center;
+  box-shadow: var(--shadow-card);
+  border: 1px solid #f0fdf4;
+}
+
+.about-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+  transition: all 0.3s duration-300;
+}
+
+.stat-number {
+  @apply font-bold text-gray-900;
+  font-size: 2.5rem;
+  color: var(--green-primary);
+}
+
+.stat-text {
+  @apply text-gray-500 mt-2 font-semibold;
+}
+
+/* ─── CARA KERJA ─────────────────────────────────────── */
+
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+.footer {
+  @apply py-16 mt-10;
+  background-color: var(--gray-soft);
+  border-top: 1px solid #e5e7eb;
+}
+
+.footer-grid {
+  @apply max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10;
+}
+
+.footer-brand {}
+
+.footer h3 {
+  @apply font-bold mb-5 text-gray-900;
+  font-size: 1.05rem;
+}
+
+.footer ul {
+  @apply space-y-3 text-gray-500;
+  list-style: none;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+.footer ul li {
+  @apply cursor-pointer transition-colors duration-200;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.footer ul li:hover {
+  color: var(--green-primary);
+}
+
+.footer-text {
+  @apply text-gray-500 mt-4 leading-relaxed;
+  font-size: 0.92rem;
+  max-width: 240px;
+}
+
+.footer-socials {
+  @apply flex gap-3 mt-5;
+}
+
+.social-icon {
+  @apply w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 text-sm;
+  background-color: var(--green-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-icon:hover {
+  background-color: var(--green-primary);
+  transform: translateY(-2px);
+}
+
+.contact-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .navbar-container {
+    padding: 1rem 1.5rem;
+  }
+
+  .nav-menu {
+    gap: 2rem;
+    margin-left: 2rem;
+  }
+
+  .login-btn {
+    margin-left: 1.5rem;
+  }
+}

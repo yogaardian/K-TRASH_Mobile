@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:user/mencari_petugas_page.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'services/api_service.dart';
 
 class PilihSampahPage extends StatefulWidget {
   final String username;
@@ -9,6 +8,8 @@ class PilihSampahPage extends StatefulWidget {
   final String catatan;
   final double? userLat;
   final double? userLng;
+  final int? userId;
+  final String? token;
 
   const PilihSampahPage({
     super.key,
@@ -17,6 +18,8 @@ class PilihSampahPage extends StatefulWidget {
     required this.catatan,
     this.userLat,
     this.userLng,
+    this.userId,
+    this.token,
   });
 
   @override
@@ -29,57 +32,53 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
   bool isAnorganik = false;
   bool isLainnya = false;
 
+  @override
+  void initState() {
+    super.initState();
+    catatanController = TextEditingController(text: widget.catatan);
+  }
+
   Future<void> _createOrder() async {
-    // Asumsi user_id = 1 untuk demo (user@test.com)
-    const userId = 1;
-    final jenisSampah = [];
+    final userId = widget.userId;
+    final token = widget.token ?? '';
+    final jenisSampah = <String>[];
     if (isOrganik) jenisSampah.add('organik');
     if (isAnorganik) jenisSampah.add('anorganik');
     if (isLainnya) jenisSampah.add('lainnya');
 
-    final response = await http.post(
-      Uri.parse('http://10.53.84.142:3000/orders'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'user_id': userId,
-        'address': widget.alamat,
-        'user_lat': widget.userLat,
-        'user_lng': widget.userLng,
-        'jenis_sampah': jenisSampah.join(', '),
-        'catatan': catatanController.text,
-      }),
-    );
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User tidak ditemukan')));
+      return;
+    }
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data['status'] == 'success') {
-        // Lanjut ke mencari petugas
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MencariPetugasPage(
-              username: widget.username,
-              orderId: data['order_id'],
-            ),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Gagal membuat order')));
-      }
-    } else {
-      ScaffoldMessenger.of(
+    final data = await ApiService.createOrder({
+      'user_id': userId,
+      'address': widget.alamat,
+      'user_lat': widget.userLat,
+      'user_lng': widget.userLng,
+      'jenis_sampah': jenisSampah.join(', '),
+      'catatan': catatanController.text,
+    }, token);
+
+    if (data['status'] == 'success') {
+      Navigator.push(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Error koneksi')));
+        MaterialPageRoute(
+          builder: (context) => MencariPetugasPage(
+            username: widget.username,
+            orderId: data['order_id'],
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Gagal membuat order')));
     }
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    catatanController = TextEditingController(text: widget.catatan);
+  void dispose() {
+    catatanController.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,7 +95,6 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
             color: Colors.green.shade50,
             borderRadius: BorderRadius.circular(20),
           ),
-
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -113,7 +111,6 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
                       color: Colors.black,
                     ),
                   ),
-
                   const Text(
                     'daur ulang sampahmu yuk!',
                     style: TextStyle(fontSize: 10, color: Colors.black54),
@@ -139,7 +136,6 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Alamat Penjemputan
             const Text(
               '📍 Alamat Penjemputan',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -154,7 +150,6 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
               ),
               child: Text(widget.alamat, style: const TextStyle(fontSize: 12)),
             ),
-
             const SizedBox(height: 30),
             const Center(
               child: Text(
@@ -163,8 +158,6 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Item Pilihan
             _buildCategoryItem(
               'Sampah Organik',
               'assets/organik.png',
@@ -189,7 +182,6 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
                 setState(() => isLainnya = val!);
               },
             ),
-
             const SizedBox(height: 20),
             const Text(
               'Catatan Untuk Sampah Lainnya',
@@ -198,14 +190,12 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
             const SizedBox(height: 8),
             TextField(
               controller: catatanController,
-
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
-
             const SizedBox(height: 30),
             Row(
               children: [
@@ -256,12 +246,6 @@ class _PilihSampahPageState extends State<PilihSampahPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    catatanController.dispose();
-    super.dispose();
   }
 
   Widget _buildCategoryItem(

@@ -1,0 +1,221 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
+import '../providers/order_provider.dart';
+import '../../../shared/widgets/shimmer_widget.dart';
+
+class PickupPage extends StatefulWidget {
+  const PickupPage({Key? key}) : super(key: key);
+
+  @override
+  State<PickupPage> createState() => _PickupPageState();
+}
+
+class _PickupPageState extends State<PickupPage> {
+  late TextEditingController _addressController;
+  late TextEditingController _notesController;
+  final MapController _mapController = MapController();
+  LatLng _mapCenter = const LatLng(-6.8915, 111.4944);
+
+  double? _selectedLat;
+  double? _selectedLng;
+  bool _isLocating = false;
+  String? _locationMessage;
+  String? _currentAddress;
+
+  // Data untuk kecamatan dan desa
+  String? selectedKecamatan;
+  String? selectedDesa;
+
+  Map<String, List<String>> dataNgawi = {
+    "Pangkur": ["Pangkur", "Bendo", "Cengkok", "Gandri"],
+    "Karangjati": ["Karangjati", "Campurasri", "Danguk"],
+    "Geneng": ["Geneng", "Kedunggalar", "Ngrambe"],
+    "Wonoasri": ["Wonoasri", "Purwosari", "Buduran", "Klitik"],
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<OrderProvider>();
+    _addressController = TextEditingController(text: provider.address);
+    _notesController = TextEditingController(text: provider.notes);
+    _selectedLat = provider.pickupLat;
+    _selectedLng = provider.pickupLng;
+
+    if (_selectedLat != null && _selectedLng != null) {
+      _mapCenter = LatLng(_selectedLat!, _selectedLng!);
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _determinePosition();
+    });
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _determinePosition() async {
+    setState(() {
+      _isLocating = true;
+      _locationMessage = null;
+    });
+
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() {
+          _locationMessage = 'Layanan lokasi belum aktif';
+          _isLocating = false;
+        });
+        return;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        setState(() {
+          _locationMessage = 'Izin lokasi ditolak';
+          _isLocating = false;
+        });
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      await _setLocation(position.latitude, position.longitude);
+    } catch (e) {
+      setState(() {
+        _locationMessage = 'Gagal mendapatkan lokasi: $e';
+      });
+    } finally {
+      setState(() {
+        _isLocating = false;
+      });
+    }
+  }
+
+  Future<void> _setLocation(double lat, double lng) async {
+    _selectedLat = lat;
+    _selectedLng = lng;
+    _mapCenter = LatLng(lat, lng);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _mapController.move(_mapCenter, 16);
+    });
+
+    await _reverseGeocode(lat, lng);
+    setState(() {});
+  }
+
+  Future<void> _reverseGeocode(double lat, double lng) async {
+    setState(() {
+      _locationMessage = null;
+    });
+
+    try {
+      final uri = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=$lat&lon=$lng',
+      );
+      final response = await http.get(
+        uri,
+        headers: {'User-Agent': 'K-TRASH/1.0 (example@example.com)'},
+      );
+      if (response.statusCode == 200) {
+        final payload = jsonDecode(response.body) as Map<String, dynamic>;
+        final address = payload['display_name'] as String?;
+        if (address != null && address.isNotEmpty) {
+          _addressController.text = address;
+          _currentAddress = address;
+        } else {
+          _addressController.text =
+              'Lat: ${lat.toStringAsFixed(6)}, Lng: ${lng.toStringAsFixed(6)}';
+          _currentAddress =
+              'Lat: ${lat.toStringAsFixed(6)}, Lng: ${lng.toStringAsFixed(6)}';
+        }
+      } else {
+        _addressController.text =
+            'Lat: ${lat.toStringAsFixed(6)}, Lng: ${lng.toStringAsFixed(6)}';
+        _currentAddress =
+            'Lat: ${lat.toStringAsFixed(6)}, Lng: ${lng.toStringAsFixed(6)}';
+      }
+    } catch (e) {
+      _addressController.text =
+          'Lat: ${lat.toStringAsFixed(6)}, Lng: ${lng.toStringAsFixed(6)}';
+      _currentAddress =
+          'Lat: ${lat.toStringAsFixed(6)}, Lng: ${lng.toStringAsFixed(6)}';
+    }
+  }
+
+  void _proceedToSelectWaste() {
+    if (_addressController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Alamat tidak boleh kosong')),
+      );
+      return;
+    }
+
+    if (_selectedLat == null || _selectedLng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih lokasi pickup terlebih dahulu')),
+      );
+      return;
+    }
+
+    final provider = context.read<OrderProvider>();
+    provider.setPickupLocation(
+      latitude: _selectedLat!,
+      longitude: _selectedLng!,
+      address: _addressController.text.trim(),
+      notes: _notesController.text.trim(),
+    );
+
+    Navigator.pushNamed(context, '/select-waste');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: const Icon(Icons.menu, color: Colors.black),
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.green.shade50,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.person_outline, size: 16, color: Colors.green),
+              const SizedBox(width: 5),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'User',
+                    style: TextStyle(fontSize: 12, color: Colors.black),
+                  ),
+                  Text(
+                    'Petugas',
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                  ),
+                ],

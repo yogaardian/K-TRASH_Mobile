@@ -5,6 +5,9 @@ class Order {
   final String code;
   final String? jenisSampah;
   final String? catatan;
+  final String? status;
+  final double? userLat;
+  final double? userLng;
 
   Order({
     this.id,
@@ -13,5 +16,8 @@ class Order {
     required this.code,
     this.jenisSampah,
     this.catatan,
+    this.status,
+    this.userLat,
+    this.userLng,
   });
 }

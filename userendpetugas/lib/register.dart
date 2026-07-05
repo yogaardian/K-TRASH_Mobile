@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'login.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
+import 'services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -291,21 +291,15 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'nama': username,
-          'email': email,
-          'password': password,
-          'role': 'user', // Role otomatis diset ke 'user'
-          'nomor_hp': phone,
-        }),
-      );
+      final data = await ApiService.register({
+        'nama': username,
+        'email': email,
+        'password': password,
+        'role': 'user',
+        'nomor_hp': phone,
+      });
 
-      final data = jsonDecode(response.body);
-
-      if (data['status'] == 'success') {
+      if (data['message'] == 'User registered successfully') {
         _showSnackbar(context, 'Registrasi berhasil');
         Future.delayed(const Duration(seconds: 1), () {
           Navigator.pushReplacement(
@@ -314,7 +308,7 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         });
       } else {
-        _showSnackbar(context, 'Register gagal');
+        _showSnackbar(context, data['message'] ?? 'Register gagal');
       }
     } catch (e) {
       _showSnackbar(context, 'Gagal terhubung ke server');

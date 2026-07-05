@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+        Network Security Configuration for K-TRASH App
+        
+        This config allows cleartext (HTTP) traffic for:
+        - Emulator testing (10.0.2.2)
+        - Local development (localhost, 127.0.0.1)
+        - Local network testing (192.168.x.x, 172.16.x.x, 10.x.x.x)
+        
+        Production URL (backend-production-bc3a.up.railway.app) uses HTTPS only.
+        
+        Required because Android 9+ (API 28+) blocks cleartext traffic by default.
+        
+        See: https://developer.android.com/training/articles/security-config
+    -->
+
+    <!-- Allow cleartext for emulator and local development only -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Emulator IP -->
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <!-- Localhost -->
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <!-- Local network ranges -->
+        <domain includeSubdomains="true">192.168.0.0</domain>
+        <domain includeSubdomains="true">172.16.0.0</domain>
+        <domain includeSubdomains="true">10.0.0.0</domain>
+    </domain-config>
+
+    <!-- Production: Force HTTPS only (no cleartext) -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">backend-production-bc3a.up.railway.app</domain>
+    </domain-config>
+
+    <!-- External image CDN (Unsplash) - HTTPS only, no cleartext -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">images.unsplash.com</domain>
+    </domain-config>
+</network-security-config>

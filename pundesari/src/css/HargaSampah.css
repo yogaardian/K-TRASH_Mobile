@@ -1,0 +1,401 @@
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 30px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #edf2ee;
+}
+
+/* =========================================================
+   GREETING
+========================================================= */
+
+.greeting-pill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 14px 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #edf2ee;
+  border-radius: 22px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.user-emoji {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.3rem;
+
+  background: #f0fdf4;
+  border-radius: 14px;
+}
+
+.greeting-text p {
+  font-size: 1rem;
+  font-weight: 800;
+
+  color: #111827;
+
+  margin-bottom: 2px;
+}
+
+.greeting-text span {
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* =========================================================
+   TOPBAR RIGHT
+========================================================= */
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+}
+
+.notif-btn {
+  position: relative;
+
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.3rem;
+
+  background: #f0fdf4;
+
+  border: 1px solid #bbf7d0;
+  border-radius: 50%;
+
+  cursor: pointer;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  color: white;
+
+  background: #16a34a;
+
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.user-profile-small {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  cursor: pointer;
+}
+
+.user-profile-small img {
+  width: 54px;
+  height: 54px;
+
+  object-fit: cover;
+
+  border: 3px solid #bbf7d0;
+  border-radius: 50%;
+}
+
+.user-meta .name {
+  font-size: 1rem;
+  font-weight: 800;
+
+  color: #111827;
+}
+
+.user-meta .id {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.harga-content {
+  min-height: 100vh;
+
+  padding: 30px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  background: #f6f8f6;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.harga-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: relative;
+}
+
+.header-text h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+
+  color: #111827;
+
+  margin-bottom: 8px;
+}
+
+.header-text p {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.header-illustration-img {
+  height: 160px;
+  object-fit: contain;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.harga-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 22px;
+
+  align-items: start;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.harga-card {
+  background: white;
+
+  border: 1px solid #edf2ee;
+  border-radius: 28px;
+
+  padding: 24px;
+
+  box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   CARD TOP
+========================================================= */
+
+.card-top {
+  display: flex;
+  gap: 16px;
+
+  margin-bottom: 22px;
+}
+
+.category-icon {
+  width: 52px;
+  height: 52px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.3rem;
+
+  border-radius: 18px;
+}
+
+.category-icon.green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.category-icon.blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.category-icon.yellow {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.category-info h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+
+  color: #111827;
+
+  margin-bottom: 5px;
+}
+
+.category-info p {
+  font-size: 0.78rem;
+  line-height: 1.6;
+
+  color: #6b7280;
+}
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  color: #16a34a;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================================
+   TABLE ROW
+========================================================= */
+
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid #f8fafc;
+
+  transition: 0.2s ease;
+}
+
+.list-row:hover {
+  background: #f9fafb;
+}
+
+.item-name {
+  font-size: 0.84rem;
+  font-weight: 500;
+
+  color: #374151;
+}
+
+.item-price {
+  font-size: 0.84rem;
+  font-weight: 800;
+
+  color: #16a34a;
+}
+
+/* =========================================================
+   FOOTER INFO
+========================================================= */
+
+.harga-info-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 16px 20px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+}
+
+.info-icon {
+  font-size: 1rem;
+  color: #16a34a;
+}
+
+.harga-info-footer p {
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+
+  .harga-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .topbar {
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .harga-content {
+    padding: 20px;
+  }
+
+  .harga-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .header-text h1 {
+    font-size: 2rem;
+  }
+
+  .header-illustration-img {
+    height: 120px;
+  }
+
+}

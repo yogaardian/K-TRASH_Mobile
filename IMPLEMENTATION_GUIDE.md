@@ -188,13 +188,13 @@ video_player: ^2.8.2           # Video playback
 ## 🔑 Test Credentials
 ```
 User Account:
-  Email: user@test.com
-  Password: 123456
+  Email: emailanda
+  Password: passwordanda
   Role: user
 
 Driver Account:
-  Email: petugas@test.com
-  Password: 123456
+  Email: emailpetugasanda
+  Password: passwordanda
   Role: driver
 ```
 
@@ -202,14 +202,12 @@ Driver Account:
 
 ## 📍 Location References
 - Base URL: `http://10.0.2.2:3000` (Android emulator)
-- Ngawi Coordinates: -6.8915, 111.4944
-- Districts: Pangkur, Karangjati, Geneng, Wonoasri
+- Madiun
+- Caruban
 
 ---
 
 ## ⚠️ Known Limitations
-- User ID hardcoded to 1 (user@test.com)
-- Driver ID hardcoded to 1 (petugas@test.com)
 - Notifications not yet implemented
 - Chat/Phone features are UI placeholders
 

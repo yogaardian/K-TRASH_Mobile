@@ -1,132 +1,152 @@
 import 'package:flutter/material.dart';
+import 'services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// TAMBAHKAN CLASS INI: Ini adalah model data agar variabel 'user' bisa dikenali
-class UserProfile {
-  final String name;
-  final String email;
-  final String phoneNumber;
-  final String? profileImage;
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
-  UserProfile({
-    required this.name,
-    required this.email,
-    required this.phoneNumber,
-    this.profileImage,
-  });
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class ProfilePage extends StatelessWidget {
-  // Sekarang UserProfile sudah didefinisikan dan tidak akan error lagi
-  final UserProfile user; 
+class _ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic>? userProfile;
+  bool isLoading = true;
+  String? error;
 
-  const ProfilePage({super.key, required this.user});
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('userId');
+      final token = prefs.getString('token') ?? '';
+      if (userId == null) {
+        setState(() {
+          error = 'User tidak ditemukan';
+          isLoading = false;
+        });
+        return;
+      }
+      final data = await ApiService.getUserProfile(userId, token);
+      setState(() {
+        userProfile = data['profile'] ?? data;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = 'Gagal memuat profil';
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: Stack(
-        children: [
-          // Header Background Hijau
-          Container(
-            height: 200,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF81C784), Color(0xFFC8E6C9)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-          
-          SafeArea(
-            child: Column(
-              children: [
-                // Tombol Back & Judul
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.black),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const Text(
-                        'Profileku',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : error != null
+              ? Center(child: Text(error!))
+              : Stack(
+                  children: [
+                    Container(
+                      height: 200,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF81C784), Color(0xFFC8E6C9)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-
-                // Kartu Profil (Data otomatis terhubung)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
                     ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Colors.grey.shade300,
-                          child: const Icon(Icons.person, size: 40, color: Colors.white),
-                        ),
-                        const SizedBox(width: 15),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                user.name, // Muncul otomatis sesuai registrasi
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                    SafeArea(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                                  onPressed: () => Navigator.pop(context),
                                 ),
-                              ),
-                              Text(user.email, style: const TextStyle(color: Colors.grey)),
-                              Text(user.phoneNumber, style: const TextStyle(color: Colors.grey)),
-                            ],
+                                const Text(
+                                  'Profileku',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const Icon(Icons.edit, color: Colors.black),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: Colors.grey.shade300,
+                                    child: const Icon(Icons.person, size: 40, color: Colors.white),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          userProfile?['nama'] ?? '-',
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(userProfile?['email'] ?? '-', style: const TextStyle(color: Colors.grey)),
+                                        Text(userProfile?['nomor_hp'] ?? '-', style: const TextStyle(color: Colors.grey)),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(Icons.edit, color: Colors.black),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          _buildMenuSection('Aktivitas BankTrash', [
+                            _buildMenuItem(Icons.location_on_outlined, 'Alamat Tersimpan'),
+                            _buildMenuItem(Icons.history, 'Aktivitas'),
+                          ]),
+                          const SizedBox(height: 20),
+                          _buildMenuSection('Lainnya', [
+                            _buildMenuItem(Icons.help_outline, 'Bantuan dan laporan'),
+                            _buildMenuItem(Icons.description_outlined, 'Ketentuan layanan'),
+                            _buildMenuItem(Icons.person_remove_outlined, 'Hapus akun'),
+                            _buildMenuItem(Icons.logout, 'Keluar', isLogout: true),
+                          ]),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-
-                const SizedBox(height: 30),
-
-                // List Menu
-                _buildMenuSection('Aktivitas BankTrash', [
-                  _buildMenuItem(Icons.location_on_outlined, 'Alamat Tersimpan'),
-                  _buildMenuItem(Icons.history, 'Aktivitas'),
-                ]),
-                const SizedBox(height: 20),
-                _buildMenuSection('Lainnya', [
-                  _buildMenuItem(Icons.help_outline, 'Bantuan dan laporan'),
-                  _buildMenuItem(Icons.description_outlined, 'Ketentuan layanan'),
-                  _buildMenuItem(Icons.person_remove_outlined, 'Hapus akun'),
-                  _buildMenuItem(Icons.logout, 'Keluar', isLogout: true),
-                ]),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

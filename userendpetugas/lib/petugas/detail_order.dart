@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import '../utils/secure_storage_helper.dart';
 import './models/order.dart';
 import 'driver_journey_page.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-const String _backendBaseUrl = 'http://10.53.84.142:3000';
 const primaryColor = Color(0xFF4CAF50);
 
 class DetailOrderPage extends StatelessWidget {
@@ -19,20 +18,18 @@ class DetailOrderPage extends StatelessWidget {
 
   Future<void> _acceptOrder(BuildContext context) async {
     try {
-      final response = await http.patch(
-        Uri.parse('$_backendBaseUrl/orders/accept/${order.id}'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'driver_id': driverId}),
-      );
+      final token = await SecureStorageHelper.getToken();
+      final data = await ApiService.acceptOrder(order.id!, driverId, token);
 
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200 && data['status'] == 'success') {
+      if (data['status'] == 'success') {
         if (context.mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  DriverJourneyPage(driverId: driverId, orderId: order.id!),
+              builder: (_) => DriverJourneyPage(
+                driverId: driverId,
+                orderId: order.id!,
+              ),
             ),
           );
         }
