@@ -211,7 +211,7 @@ class _TrackingPageState extends State<TrackingPage> {
   }
 
   double? _toDouble(dynamic value) {
-    if (value == null) return null;
+    if (value == null) return null; 
     if (value is num) return value.toDouble();
     if (value is String) return double.tryParse(value);
     return null;
@@ -627,7 +627,10 @@ class _TrackingPageState extends State<TrackingPage> {
               maxZoom: 18,
             ),
             children: [
-              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
+                subdomains: const ['a', 'b', 'c'],
+              ),
               if (_routePoints.isNotEmpty)
                 PolylineLayer(
                   polylines: [
@@ -772,7 +775,7 @@ class _TrackingPageState extends State<TrackingPage> {
               icon: const Icon(Icons.check, size: 16, color: Colors.white),
               label: const Text('Selesai', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: _T.green700,
+                backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                 padding: const EdgeInsets.symmetric(vertical: 13),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_T.radiusSm)),
               ),

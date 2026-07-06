@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:user/constants/route_constants.dart';
 import 'package:user/services/order_service.dart';
 import '../providers/order_provider.dart';
 
@@ -70,7 +71,7 @@ class _FindDriverPageState extends State<FindDriverPage> {
               if (mounted) {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  '/result',
+                  RouteConstants.trackingPage,
                   (route) =>
                       route.settings.name == '/dashboard' || route.isFirst,
                   arguments: updatedOrder.id,

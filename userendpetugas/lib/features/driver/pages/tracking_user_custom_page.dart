@@ -444,8 +444,9 @@ class _TrackingUserCustomPageState extends State<TrackingUserCustomPage> {
           options: MapOptions(center: center, zoom: 14),
           children: [
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.banktrash.app',
+              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
+              tileProvider: NetworkTileProvider(),
             ),
             MarkerLayer(
               markers: [

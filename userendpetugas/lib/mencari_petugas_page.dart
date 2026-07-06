@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../constants/api_constants.dart';
-import 'tracking_petugas_page.dart';
+import 'features/tracking/pages/tracking_page.dart';
 
 final String _backendBaseUrl = ApiConstants.baseUrl;
 
@@ -49,10 +49,7 @@ class _MencariPetugasPageState extends State<MencariPetugasPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => TrackingPetugasPage(
-                username: widget.username,
-                orderId: widget.orderId,
-              ),
+              builder: (_) => TrackingPage(orderId: widget.orderId),
             ),
           );
         }

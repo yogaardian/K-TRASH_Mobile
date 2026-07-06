@@ -19,6 +19,6 @@ class Validators {
   }
 
   static bool isValidOtp(String otp) {
-    return RegExp(r'^\d{6}$').hasMatch(otp);
+    return RegExp(r'^[A-Za-z0-9]{6}$').hasMatch(otp);
   }
 }

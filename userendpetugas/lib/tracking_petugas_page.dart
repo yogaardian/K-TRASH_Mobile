@@ -24,7 +24,7 @@ class TrackingPetugasPage extends StatefulWidget {
 
 class _TrackingPetugasPageState extends State<TrackingPetugasPage> {
   Position? _currentPosition;
-  MapController? _mapController;
+  final MapController _mapController = MapController();
   Timer? _trackingTimer;
   LatLng? driverPosition;
   String? orderStatus;
@@ -32,7 +32,6 @@ class _TrackingPetugasPageState extends State<TrackingPetugasPage> {
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
     _getUserLocation();
     _startTracking();
   }
@@ -78,8 +77,8 @@ class _TrackingPetugasPageState extends State<TrackingPetugasPage> {
 
           driverPosition = LatLng(lat, lng);
 
-          if (_mapController != null && driverPosition != null) {
-            _mapController!.move(driverPosition!, 16.0);
+          if (driverPosition != null) {
+            _mapController.move(driverPosition!, 16.0);
           }
         }
       } catch (e) {
@@ -161,8 +160,10 @@ class _TrackingPetugasPageState extends State<TrackingPetugasPage> {
                                     children: [
                                       TileLayer(
                                         urlTemplate:
-                                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                        userAgentPackageName: 'com.example.app',
+                                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                        subdomains: const ['a', 'b', 'c'],
+                                        tileProvider:
+                                            const NetworkTileProvider(),
                                       ),
                                       MarkerLayer(
                                         markers: [

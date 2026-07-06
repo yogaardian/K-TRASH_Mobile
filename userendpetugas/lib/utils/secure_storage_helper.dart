@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageHelper {
@@ -5,7 +6,33 @@ class SecureStorageHelper {
   static const String _userKey = 'auth_user';
   static const String _refreshTokenKey = 'refresh_token';
 
-  static const FlutterSecureStorage _storage = FlutterSecureStorage();
+  static final FlutterSecureStorage _storage = FlutterSecureStorage(
+    aOptions: const AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: const IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock,
+    ),
+  );
+
+  static bool _isBrokenSecureStoragePayload(Object error) {
+    final message = error.toString().toLowerCase();
+    return message.contains('badpadding') ||
+        message.contains('invalidkey') ||
+        message.contains('decryption') ||
+        message.contains('ciphertext');
+  }
+
+  static Future<void> _handleSecureStorageError(Object error) async {
+    if (_isBrokenSecureStoragePayload(error)) {
+      print(
+        'SecureStorageHelper: broken secure storage payload detected, clearing storage...',
+      );
+      try {
+        await _storage.deleteAll();
+      } catch (e) {
+        print('Error clearing broken secure storage: $e');
+      }
+    }
+  }
 
   // Token Management
   static Future<void> saveToken(String token) async {
@@ -22,6 +49,7 @@ class SecureStorageHelper {
       return await _storage.read(key: _tokenKey);
     } catch (e) {
       print('Error getting token: $e');
+      await _handleSecureStorageError(e);
       return null;
     }
   }
@@ -60,6 +88,7 @@ class SecureStorageHelper {
       return await _storage.read(key: _userKey);
     } catch (e) {
       print('Error getting user data: $e');
+      await _handleSecureStorageError(e);
       return null;
     }
   }
@@ -88,6 +117,7 @@ class SecureStorageHelper {
       return await _storage.read(key: _refreshTokenKey);
     } catch (e) {
       print('Error getting refresh token: $e');
+      await _handleSecureStorageError(e);
       return null;
     }
   }

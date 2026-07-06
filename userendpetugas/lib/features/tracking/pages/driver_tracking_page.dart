@@ -139,11 +139,34 @@ class _DriverTrackingPageState extends State<DriverTrackingPage> {
       final result = await _trackingService.getTracking(widget.orderId!);
       final data = _normalizeResponse(result);
 
-      final driverLat = _toDouble(data['driver_lat']);
-      final driverLng = _toDouble(data['driver_lng']);
-      final userLat = _toDouble(data['user_lat']);
-      final userLng = _toDouble(data['user_lng']);
-      final driverName = data['driver_name']?.toString() ?? data['driver_name']?.toString() ?? 'Petugas';
+      // ── DEFENSIVE PARSING: Handle 2 response formats ──
+      // Format 1: Modern API with explicit driver_lat/driver_lng
+      double? driverLat = _toDouble(data['driver_lat']);
+      double? driverLng = _toDouble(data['driver_lng']);
+
+      // Format 2: Simple endpoint returning direct lat/lng (from driver_locations table)
+      if (driverLat == null && driverLng == null) {
+        driverLat = _toDouble(data['lat']);
+        driverLng = _toDouble(data['lng']);
+      }
+
+      // Format 3: locations array fallback
+      if (driverLat == null && driverLng == null) {
+        final locations = data['locations'] as List?;
+        if (locations != null && locations.isNotEmpty) {
+          final lastLoc = locations.last as Map?;
+          if (lastLoc != null) {
+            driverLat = _toDouble(lastLoc['lat']);
+            driverLng = _toDouble(lastLoc['lng']);
+          }
+        }
+      }
+
+      // User location
+      double? userLat = _toDouble(data['user_lat']);
+      double? userLng = _toDouble(data['user_lng']);
+
+      final driverName = data['driver_name']?.toString() ?? data['driver']?.toString() ?? 'Petugas';
       final status = data['order_status']?.toString() ?? data['status']?.toString() ?? '';
       final driverId = data['driver_id'] is num ? (data['driver_id'] as num).toInt() : int.tryParse(data['driver_id']?.toString() ?? '');
 
@@ -319,7 +342,9 @@ class _DriverTrackingPageState extends State<DriverTrackingPage> {
                         ),
                         children: [
                           TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            subdomains: const ['a', 'b', 'c'],
+                            tileProvider: NetworkTileProvider(),
                           ),
                           if (_routePoints.isNotEmpty)
                             PolylineLayer(

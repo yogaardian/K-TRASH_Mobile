@@ -251,3 +251,37 @@ exports.completeOrder = async (req, res) => {
     });
   }
 };
+
+exports.getPendingOrders = async (req, res) => {
+  try {
+    // Get all pending orders that haven't been rejected by the current driver
+    const driverId = req.user?.id;
+    
+    const [pendingOrders] = await db.query(`
+      SELECT 
+        o.id,
+        o.user_id,
+        o.address,
+        o.latitude,
+        o.longitude,
+        o.jenis_sampah,
+        o.status,
+        o.created_at,
+        u.nama AS user_name,
+        u.nomor_hp AS user_phone,
+        COALESCE(CASE WHEN dro.id IS NOT NULL THEN 1 ELSE 0 END, 0) AS is_rejected_by_me
+      FROM orders o
+      LEFT JOIN users u ON o.user_id = u.id
+      LEFT JOIN driver_rejected_orders dro ON o.id = dro.order_id AND dro.driver_id = ?
+      WHERE o.status = 'pending' 
+        AND dro.id IS NULL
+      ORDER BY o.created_at DESC
+      LIMIT 50
+    `, [driverId || 0]);
+
+    res.json(pendingOrders);
+  } catch (err) {
+    console.error('Error fetching pending orders:', err);
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+};

@@ -22,7 +22,7 @@ class _PickupPageState extends State<PickupPage> {
   Position? _currentPosition;
   String? _currentAddress;
   bool _isLocating = false;
-  MapController? _mapController;
+  final MapController _mapController = MapController();
 
   // 🔥 TAMBAHKAN INI
   String? selectedKecamatan;
@@ -104,8 +104,8 @@ class _PickupPageState extends State<PickupPage> {
   }
 
   Future<void> _moveCamera() async {
-    if (_mapController != null && _currentPosition != null) {
-      _mapController!.move(
+    if (_currentPosition != null) {
+      _mapController.move(
         LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
         16.0,
       );
@@ -331,8 +331,9 @@ class _PickupPageState extends State<PickupPage> {
                         children: [
                           TileLayer(
                             urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.banktrash.app',
+                                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            subdomains: const ['a', 'b', 'c'],
+                            tileProvider: NetworkTileProvider(),
                           ),
                           MarkerLayer(
                             markers: [

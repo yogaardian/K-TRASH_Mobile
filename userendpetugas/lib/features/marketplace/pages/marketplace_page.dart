@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../constants/api_constants.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../services/marketplace_service.dart';
 import '../../../services/user_service.dart';
@@ -217,21 +218,61 @@ class _MarketplacePageState extends State<MarketplacePage> {
     }).toList();
   }
 
-  String _getPlaceholderImage(String category) {
+  String _getPlaceholderImage(
+    String category, {
+    String? productName,
+    int? productId,
+  }) {
     final key = category.toLowerCase();
+    final seedBase = [
+      key,
+      productName?.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-') ??
+          'produk',
+      productId?.toString() ?? '0',
+    ].join('-');
+
     final placeholders = {
-      'beras': 'https://images.unsplash.com/photo-1585707572336-c9b5b0e5e1f0?w=500&h=300&fit=crop',
-      'minyak': 'https://images.unsplash.com/photo-1599599810508-fb5e8e1e5f0a?w=500&h=300&fit=crop',
-      'telur': 'https://images.unsplash.com/photo-1585707572336-c9b5b0e5e1f2?w=500&h=300&fit=crop',
-      'gula': 'https://images.unsplash.com/photo-1599599810962-e5e5e5e5e5e5?w=500&h=300&fit=crop',
-      'tepung': 'https://images.unsplash.com/photo-1585707572336-c9b5b0e5e1f0?w=500&h=300&fit=crop',
-      'bumbu': 'https://images.unsplash.com/photo-1599599810962-e5e5e5e5e5e5?w=500&h=300&fit=crop',
-      'minuman': 'https://images.unsplash.com/photo-1599599810508-fb5e8e1e5f0a?w=500&h=300&fit=crop',
-      'paket': 'https://images.unsplash.com/photo-1599599810962-e5e5e5e5e5e5?w=500&h=300&fit=crop',
-      'lokal': 'https://images.unsplash.com/photo-1585707572336-c9b5b0e5e1f0?w=500&h=300&fit=crop',
+      'beras': 'https://picsum.photos/seed/beras/500/300',
+      'minyak': 'https://picsum.photos/seed/minyak/500/300',
+      'telur': 'https://picsum.photos/seed/telur/500/300',
+      'gula': 'https://picsum.photos/seed/gula/500/300',
+      'tepung': 'https://picsum.photos/seed/tepung/500/300',
+      'bumbu': 'https://picsum.photos/seed/bumbu/500/300',
+      'minuman': 'https://picsum.photos/seed/minuman/500/300',
+      'paket': 'https://picsum.photos/seed/paket/500/300',
+      'lokal': 'https://picsum.photos/seed/lokal/500/300',
     };
-    return placeholders[key] ??
-        'https://images.unsplash.com/photo-1585707572336-c9b5b0e5e1f0?w=500&h=300&fit=crop';
+
+    final baseUrl =
+        placeholders[key] ?? 'https://picsum.photos/seed/produk/500/300';
+    return '$baseUrl?seed=$seedBase';
+  }
+
+  String _getProductImageUrl(ProductModel product) {
+    final rawUrl = product.gambar?.trim();
+    if (rawUrl != null && rawUrl.isNotEmpty) {
+      final normalizedUrl = rawUrl.replaceAll('\\', '/').trim();
+      final uri = Uri.tryParse(normalizedUrl);
+      if (uri != null && uri.hasScheme && uri.hasAuthority) {
+        return normalizedUrl;
+      }
+
+      if (normalizedUrl.startsWith('//')) {
+        return '${ApiConstants.baseUrl.replaceFirst(RegExp(r'^https?://'), '')}$normalizedUrl';
+      }
+
+      if (normalizedUrl.startsWith('/')) {
+        return '${ApiConstants.baseUrl}$normalizedUrl';
+      }
+
+      return '${ApiConstants.baseUrl}/${normalizedUrl.replaceAll(RegExp(r'^/+'), '')}';
+    }
+
+    return _getPlaceholderImage(
+      product.kategori,
+      productName: product.nama,
+      productId: product.id,
+    );
   }
 
   // Presentation-only helper — pure formatting, no business logic change.
@@ -245,9 +286,14 @@ class _MarketplacePageState extends State<MarketplacePage> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
-    final totalSaldo = _parseNumeric(_balanceData?['saldo'], user?.saldo ?? 0.0);
-    final saldoHold =
-        _parseNumeric(_balanceData?['saldo_hold'], user?.saldoHold ?? 0.0);
+    final totalSaldo = _parseNumeric(
+      _balanceData?['saldo'],
+      user?.saldo ?? 0.0,
+    );
+    final saldoHold = _parseNumeric(
+      _balanceData?['saldo_hold'],
+      user?.saldoHold ?? 0.0,
+    );
     final availableBalance = totalSaldo - saldoHold;
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
@@ -258,7 +304,9 @@ class _MarketplacePageState extends State<MarketplacePage> {
     // compute item width and target height to avoid vertical overflow on short screens
     const horizontalPadding = 32.0; // left+right sliver padding (16+16)
     const crossAxisSpacing = 12.0;
-    final itemWidth = (width - horizontalPadding - (crossAxisCount - 1) * crossAxisSpacing) / crossAxisCount;
+    final itemWidth =
+        (width - horizontalPadding - (crossAxisCount - 1) * crossAxisSpacing) /
+        crossAxisCount;
     // target card height: responsive but clamped so cards aren't too tall on small screens
     final targetCardHeight = height * (width >= 900 ? 0.28 : 0.32);
     final clampedCardHeight = targetCardHeight.clamp(220.0, 380.0);
@@ -276,19 +324,18 @@ class _MarketplacePageState extends State<MarketplacePage> {
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                 sliver: SliverList(
-                  delegate: SliverChildListDelegate(
-                    [
-                      _buildHeader(),
-                      const SizedBox(height: 18),
-                      _buildBalanceCard(availableBalance, totalSaldo, saldoHold),
-                      const SizedBox(height: 20),
-                      _buildSearchAndCategories(),
-                      const SizedBox(height: 18),
-                      if (_errorMessage != null) _buildErrorBanner(_errorMessage!),
-                      _buildSectionHeader(),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
+                  delegate: SliverChildListDelegate([
+                    _buildHeader(),
+                    const SizedBox(height: 18),
+                    _buildBalanceCard(availableBalance, totalSaldo, saldoHold),
+                    const SizedBox(height: 20),
+                    _buildSearchAndCategories(),
+                    const SizedBox(height: 18),
+                    if (_errorMessage != null)
+                      _buildErrorBanner(_errorMessage!),
+                    _buildSectionHeader(),
+                    const SizedBox(height: 12),
+                  ]),
                 ),
               ),
               if (_isLoading)
@@ -313,21 +360,18 @@ class _MarketplacePageState extends State<MarketplacePage> {
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                   sliver: SliverGrid(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final product = _filteredProducts[index];
-                        return _buildProductCard(product, availableBalance);
-                      },
-                      childCount: _filteredProducts.length,
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final product = _filteredProducts[index];
+                      return _buildProductCard(product, availableBalance);
+                    }, childCount: _filteredProducts.length),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      // Use childAspectRatio (width / height) so the grid
+                      // adapts to screen width and avoids fixed excessive height.
+                      childAspectRatio: childAspectRatio,
                     ),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        // Use childAspectRatio (width / height) so the grid
-                        // adapts to screen width and avoids fixed excessive height.
-                        childAspectRatio: childAspectRatio,
-                      ),
                   ),
                 ),
               const SliverToBoxAdapter(child: SizedBox(height: 28)),
@@ -458,9 +502,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
             ),
             child: Row(
               children: [
-                Expanded(
-                  child: _buildBalanceItem('Total Saldo', total),
-                ),
+                Expanded(child: _buildBalanceItem('Total Saldo', total)),
                 Container(
                   width: 1,
                   height: 30,
@@ -479,8 +521,9 @@ class _MarketplacePageState extends State<MarketplacePage> {
 
   Widget _buildBalanceItem(String label, num value, {bool alignEnd = false}) {
     return Column(
-      crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           label,
@@ -547,8 +590,10 @@ class _MarketplacePageState extends State<MarketplacePage> {
                     )
                   : null,
               border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 4,
+              ),
             ),
           ),
         ),
@@ -562,7 +607,8 @@ class _MarketplacePageState extends State<MarketplacePage> {
             itemBuilder: (context, index) {
               final category = categories[index];
               final isActive = category == _selectedCategory;
-              final icon = _categoryIcons[category.toLowerCase()] ??
+              final icon =
+                  _categoryIcons[category.toLowerCase()] ??
                   Icons.category_rounded;
               return _CategoryChip(
                 label: category,
@@ -698,6 +744,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
   Widget _buildProductCard(ProductModel product, double availableBalance) {
     final price = 'Rp ${_formatRupiah(product.harga)}';
     final canBuy = product.stok > 0 && availableBalance >= product.harga;
+    final imageUrl = _getProductImageUrl(product);
 
     return Container(
       decoration: BoxDecoration(
@@ -727,7 +774,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                   // and avoid large empty vertical gaps inside the card
                   aspectRatio: 4 / 3,
                   child: Image.network(
-                    product.gambar ?? _getPlaceholderImage(product.kategori),
+                    imageUrl,
                     fit: BoxFit.cover,
                     width: double.infinity,
                     loadingBuilder: (context, child, loadingProgress) {
@@ -757,17 +804,28 @@ class _MarketplacePageState extends State<MarketplacePage> {
                         ),
                         child: Center(
                           child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Text(
-                              product.nama,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 11,
-                              ),
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.image_outlined,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  product.nama,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -780,8 +838,10 @@ class _MarketplacePageState extends State<MarketplacePage> {
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: product.stok > 0
                         ? Colors.white.withOpacity(0.92)
@@ -793,9 +853,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                     style: TextStyle(
                       fontSize: 9.5,
                       fontWeight: FontWeight.w700,
-                      color: product.stok > 0
-                          ? _Palette.primary
-                          : Colors.white,
+                      color: product.stok > 0 ? _Palette.primary : Colors.white,
                     ),
                   ),
                 ),
@@ -862,8 +920,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                             ? _Palette.primary
                             : _Palette.background,
                         disabledBackgroundColor: _Palette.background,
-                        foregroundColor:
-                            canBuy ? Colors.white : _Palette.muted,
+                        foregroundColor: canBuy ? Colors.white : _Palette.muted,
                         padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -875,11 +932,11 @@ class _MarketplacePageState extends State<MarketplacePage> {
                       child: Text(
                         !canBuy
                             ? (product.stok <= 0
-                                ? 'Stok Habis'
-                                : 'Saldo Kurang')
+                                  ? 'Stok Habis'
+                                  : 'Saldo Kurang')
                             : _isOrdering
-                                ? 'Memproses...'
-                                : 'Beli Sekarang',
+                            ? 'Memproses...'
+                            : 'Beli Sekarang',
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,

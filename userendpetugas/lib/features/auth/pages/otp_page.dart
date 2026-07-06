@@ -139,7 +139,7 @@ class _OtpPageState extends State<OtpPage> {
 
     if (!Validators.isValidOtp(_otpCode)) {
       setState(() {
-        _errorMessage = 'Masukkan 6 digit kode OTP';
+        _errorMessage = 'Masukkan 6 karakter kode OTP';
       });
       return;
     }

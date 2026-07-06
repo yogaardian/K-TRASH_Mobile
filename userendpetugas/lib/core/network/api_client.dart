@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../../constants/api_constants.dart';
 import '../../utils/secure_storage_helper.dart';
 
@@ -27,6 +28,8 @@ class ApiClient {
         },
       ),
     );
+    // Debug: show resolved baseUrl at startup
+    debugPrint('ApiClient initialized with baseUrl=${_dio.options.baseUrl}');
 
     // Add JWT interceptor
     _dio.interceptors.add(_JwtInterceptor());
@@ -142,8 +145,9 @@ class _JwtInterceptor extends Interceptor {
         options.headers[ApiConstants.authorizationHeader] =
             '${ApiConstants.bearerPrefix} $token';
       }
+      debugPrint('ApiClient onRequest: ${options.method} ${options.baseUrl}${options.path} tokenPresent=${token != null && token.isNotEmpty}');
     } catch (e) {
-      print('Error getting token from secure storage: $e');
+      debugPrint('Error getting token from secure storage: $e');
     }
     return handler.next(options);
   }
@@ -165,6 +169,7 @@ class _ErrorInterceptor extends Interceptor {
       }
     }
 
+    debugPrint('ApiClient onError: ${err.requestOptions.method} ${err.requestOptions.baseUrl}${err.requestOptions.path} -> ${err.response?.statusCode} ${err.message}');
     return handler.next(err);
   }
 }

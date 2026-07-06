@@ -211,8 +211,7 @@ class _PickupPageState extends State<PickupPage> {
       final cleanedDisplayName = displayName
           .replaceAll(RegExp(r'\s+'), ' ')
           .trim();
-      if (cleanedDisplayName.isNotEmpty &&
-          cleanedDisplayName.toLowerCase() != 'caruban') {
+      if (cleanedDisplayName.isNotEmpty) {
         return cleanedDisplayName;
       }
     }
@@ -257,12 +256,16 @@ class _PickupPageState extends State<PickupPage> {
     });
 
     try {
+      // Use addressdetails and language to improve returned address components
       final uri = Uri.parse(
-        'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=$lat&lon=$lng',
+        'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=$lat&lon=$lng&addressdetails=1&zoom=18&accept-language=id',
       );
       final response = await http.get(
         uri,
-        headers: {'User-Agent': 'K-TRASH/1.0 (example@example.com)'},
+        headers: {
+          // Nominatim requires a valid User-Agent. Use package identifier and contact URL/email.
+          'User-Agent': 'com.banktrash.app/1.0 (https://example.com)'
+        },
       );
       if (response.statusCode == 200) {
         final payload = jsonDecode(response.body) as Map<String, dynamic>;
@@ -270,10 +273,12 @@ class _PickupPageState extends State<PickupPage> {
         _addressController.text = address;
         _currentAddress = address;
       } else {
+        debugPrint('Reverse geocode failed: ${response.statusCode} ${response.body}');
         _addressController.text = 'Jalan sekitar lokasi';
         _currentAddress = 'Jalan sekitar lokasi';
       }
     } catch (e) {
+      debugPrint('Reverse geocode error: $e');
       _addressController.text = 'Jalan sekitar lokasi';
       _currentAddress = 'Jalan sekitar lokasi';
     }
@@ -685,7 +690,10 @@ class _PickupPageState extends State<PickupPage> {
                       children: [
                         TileLayer(
                           urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: const ['a', 'b', 'c'],
+                          userAgentPackageName: 'com.banktrash.app',
+                          tileProvider: NetworkTileProvider(),
                         ),
                         if (hasLocation)
                           MarkerLayer(

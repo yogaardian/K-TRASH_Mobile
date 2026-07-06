@@ -446,8 +446,10 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
           children: [
             TileLayer(
               urlTemplate:
-                  'https://tile-a.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
+                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
               userAgentPackageName: 'com.banktrash.app',
+              tileProvider: NetworkTileProvider(),
             ),
             MarkerLayer(
               markers: [
@@ -487,8 +489,10 @@ class _DashboardPetugasState extends State<DashboardPetugas> {
           children: [
             TileLayer(
               urlTemplate:
-                  'https://tile-a.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
+                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
               userAgentPackageName: 'com.banktrash.app',
+              tileProvider: NetworkTileProvider(),
             ),
             PolylineLayer(
               polylines: [

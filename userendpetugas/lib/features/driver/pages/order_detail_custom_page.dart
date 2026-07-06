@@ -62,6 +62,7 @@ class OrderDetailCustomPage extends StatefulWidget {
 }
 
 class _OrderDetailCustomPageState extends State<OrderDetailCustomPage> {
+  final MapController _mapController = MapController();
   bool _submitting = false;
 
   // ── ORIGINAL LOGIC — NOT CHANGED ─────────────────────────────────────────
@@ -157,12 +158,20 @@ class _OrderDetailCustomPageState extends State<OrderDetailCustomPage> {
                 children: [
                   // Base map
                   FlutterMap(
-                    options: MapOptions(center: center, zoom: 15),
+                    mapController: _mapController,
+                    options: MapOptions(
+                      center: center,
+                      zoom: 15,
+                      minZoom: 5,
+                      maxZoom: 18,
+                    ),
                     children: [
                       TileLayer(
                         urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        subdomains: const ['a', 'b', 'c'],
                         userAgentPackageName: 'com.banktrash.app',
+                        tileProvider: NetworkTileProvider(),
                       ),
                       MarkerLayer(
                         markers: [

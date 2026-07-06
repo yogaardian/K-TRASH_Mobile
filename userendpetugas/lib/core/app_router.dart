@@ -11,7 +11,6 @@ import '../features/history/pages/history_page.dart';
 import '../features/orders/pages/pickup_page.dart';
 import '../features/orders/pages/select_waste_page.dart';
 import '../features/orders/pages/find_driver_page.dart';
-import '../features/orders/pages/result_page.dart';
 import '../features/tracking/pages/tracking_page.dart';
 import '../features/tracking/pages/driver_tracking_page.dart';
 import '../features/marketplace/pages/marketplace_page.dart';
@@ -39,9 +38,7 @@ class AppRouter {
 
       case RouteConstants.otp:
         final email = settings.arguments as String?;
-        return MaterialPageRoute(
-          builder: (_) => OtpPage(email: email ?? ''),
-        );
+        return MaterialPageRoute(builder: (_) => OtpPage(email: email ?? ''));
 
       // User Routes
       case RouteConstants.userDashboard:
@@ -84,7 +81,7 @@ class AppRouter {
       case '/result':
         final orderId = settings.arguments as int?;
         return MaterialPageRoute(
-          builder: (_) => ResultPage(orderId: orderId),
+          builder: (_) => TrackingPage(orderId: orderId),
         );
 
       // Tracking Routes
@@ -116,10 +113,8 @@ class AppRouter {
             ? (settings.arguments as Map)['driverId'] as int? ?? 1
             : 1;
         return MaterialPageRoute(
-          builder: (_) => DriverOrderDetailPage(
-            order: order,
-            driverId: driverId,
-          ),
+          builder: (_) =>
+              DriverOrderDetailPage(order: order, driverId: driverId),
         );
 
       case '/driver-journey':
@@ -127,10 +122,8 @@ class AppRouter {
         final driverId = args?['driverId'] as int? ?? 1;
         final orderId = args?['orderId'] as int? ?? 1;
         return MaterialPageRoute(
-          builder: (_) => DriverJourneyPage(
-            driverId: driverId,
-            orderId: orderId,
-          ),
+          builder: (_) =>
+              DriverJourneyPage(driverId: driverId, orderId: orderId),
         );
 
       case '/customer-search':
@@ -138,10 +131,8 @@ class AppRouter {
         final driverId = args?['driverId'] as int? ?? 1;
         final orderId = args?['orderId'] as int? ?? 1;
         return MaterialPageRoute(
-          builder: (_) => CustomerSearchPage(
-            driverId: driverId,
-            orderId: orderId,
-          ),
+          builder: (_) =>
+              CustomerSearchPage(driverId: driverId, orderId: orderId),
         );
 
       case '/weigh-waste':
@@ -150,11 +141,8 @@ class AppRouter {
         final driverId = args?['driverId'] as int? ?? 1;
         final orderId = args?['orderId'] as int? ?? 1;
         return MaterialPageRoute(
-          builder: (_) => WeighWastePage(
-            user: user,
-            driverId: driverId,
-            orderId: orderId,
-          ),
+          builder: (_) =>
+              WeighWastePage(user: user, driverId: driverId, orderId: orderId),
         );
 
       case RouteConstants.driverProfile:
@@ -168,9 +156,7 @@ class AppRouter {
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
-            body: Center(
-              child: Text('Route ${settings.name} not found'),
-            ),
+            body: Center(child: Text('Route ${settings.name} not found')),
           ),
         );
     }

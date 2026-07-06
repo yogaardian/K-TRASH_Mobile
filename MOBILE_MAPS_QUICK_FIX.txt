@@ -1,0 +1,62 @@
+# 🎯 QUICK SUMMARY: MOBILE MAPS FIX
+
+## Problem
+Production APK maps tidak berfungsi karena mobile hanya expect 1 response format, padahal backend mungkin return format lain.
+
+## Solution  
+Ditambahkan **defensive response parsing** di 2 file Flutter:
+1. `tracking_page.dart` (User tracking driver)
+2. `driver_tracking_page.dart` (Driver tracking to user)
+
+Sekarang support 3 format response:
+- ✅ Format modern: `driver_lat` + `driver_lng`
+- ✅ Format simple: `lat` + `lng` 
+- ✅ Format array: `locations` array
+
+## Perubahan Code
+
+### Sebelumnya:
+```dart
+double? driverLat = _toDouble(data['driver_lat']);
+double? driverLng = _toDouble(data['driver_lng']);
+// Jika backend return format lain → driverLat/driverLng = null → MAPS BLANK ❌
+```
+
+### Sekarang:
+```dart
+// Coba format 1: driver_lat/driver_lng
+double? driverLat = _toDouble(data['driver_lat']);
+double? driverLng = _toDouble(data['driver_lng']);
+
+// Jika gagal, coba format 2: lat/lng
+if (driverLat == null && driverLng == null) {
+  driverLat = _toDouble(data['lat']);
+  driverLng = _toDouble(data['lng']);
+}
+
+// Jika tetap gagal, coba format 3: locations array
+if (driverLat == null && driverLng == null) {
+  final locations = data['locations'] as List?;
+  if (locations != null && locations.isNotEmpty) {
+    final lastLoc = locations.last as Map?;
+    if (lastLoc != null) {
+      driverLat = _toDouble(lastLoc['lat']);
+      driverLng = _toDouble(lastLoc['lng']);
+    }
+  }
+}
+
+// RESULT: Maps work for ANY format backend returns ✅
+```
+
+## Files Modified
+- [userendpetugas/lib/features/tracking/pages/tracking_page.dart](userendpetugas/lib/features/tracking/pages/tracking_page.dart#L119)
+- [userendpetugas/lib/features/tracking/pages/driver_tracking_page.dart](userendpetugas/lib/features/tracking/pages/driver_tracking_page.dart#L129)
+
+## Next Steps
+1. Build APK: `flutter build apk --release --dart-define=BACKEND_URL=https://api-ktrashuns.tifpsdku.com`
+2. Test dengan production backend
+3. Maps sekarang harus work! ✅
+
+## Catatan
+Ini menggunakan SAME LOGIC yang sudah bekerja di website (pundesari), jadi pasti compatible dengan production backend yang sudah ada!

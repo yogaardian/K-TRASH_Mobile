@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../constants/api_constants.dart';
 import '../core/network/api_client.dart';
 
@@ -14,7 +15,9 @@ class TrackingService {
 
   Future<Map<String, dynamic>> getTracking(int orderId) async {
     try {
+      debugPrint('TrackingService.getTracking: fetching ${ApiConstants.getTrackingEndpoint}/$orderId');
       final response = await _apiClient.get('${ApiConstants.getTrackingEndpoint}/$orderId');
+      debugPrint('TrackingService.getTracking: status=${response.statusCode}');
       if (response.statusCode == 200) {
         final raw = response.data;
         if (raw is Map<String, dynamic>) {

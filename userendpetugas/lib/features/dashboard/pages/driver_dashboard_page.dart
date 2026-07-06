@@ -10,9 +10,9 @@ import 'package:provider/provider.dart';
 import '../../../petugas/models/order.dart';
 import '../../driver/providers/driver_provider.dart';
 import '../../driver/pages/driver_profile_page.dart';
-import '../../driver/pages/driver_history_page.dart';
 import '../../driver/pages/order_detail_custom_page.dart';
 import '../../../utils/secure_storage_helper.dart';
+import '../../../utils/profile_photo_utils.dart';
 import '../../../services/api_service.dart';
 
 // ─── Design Tokens (mirrored from React CSS) ──────────────────────────────────
@@ -93,14 +93,32 @@ class _DriverDashboardPageState extends State<DriverDashboardPage> {
                 ? parsed['id'] as int
                 : int.tryParse('${parsed['id']}');
             _driverName = parsed['nama'] ?? parsed['name']?.toString();
-            _driverPhoto = parsed['photo']?.toString() ??
-                parsed['profile_photo']?.toString();
+            _driverPhoto = _extractProfilePhoto(parsed);
           });
         }
       }
     } catch (_) {
       // ignore invalid stored user data
     }
+  }
+
+  String? _extractProfilePhoto(Map<String, dynamic> data) {
+    final candidates = [
+      data['photo'],
+      data['profile_photo'],
+      data['profilePhoto'],
+      data['avatar'],
+      data['profile_image'],
+    ];
+
+    for (final candidate in candidates) {
+      final value = candidate?.toString().trim();
+      if (value != null && value.isNotEmpty) {
+        return value;
+      }
+    }
+
+    return null;
   }
 
   Future<void> _initializeLocationTracking() async {
@@ -326,11 +344,7 @@ class _DriverDashboardPageState extends State<DriverDashboardPage> {
       backgroundColor: _kMapBg,
       body: IndexedStack(
         index: _selectedIndex,
-        children: [
-          _buildDashboardTab(),
-          const DriverHistoryPage(),
-          const DriverProfilePage(),
-        ],
+        children: [_buildDashboardTab(), const DriverProfilePage()],
       ),
       bottomNavigationBar: _buildBottomNav(),
     );
@@ -353,8 +367,7 @@ class _DriverDashboardPageState extends State<DriverDashboardPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(0, Icons.home_rounded, 'Beranda'),
-              _buildNavItem(1, Icons.history_rounded, 'Riwayat'),
-              _buildNavItem(2, Icons.person_rounded, 'Profil'),
+              _buildNavItem(1, Icons.person_rounded, 'Profil'),
             ],
           ),
         ),
@@ -475,8 +488,10 @@ class _DriverDashboardPageState extends State<DriverDashboardPage> {
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
               userAgentPackageName: 'com.banktrash.app',
+              tileProvider: NetworkTileProvider(),
             ),
             MarkerLayer(markers: _buildMarkers()),
             if (activeOrder?.userLat != null && activeOrder?.userLng != null)
@@ -689,13 +704,27 @@ class _DriverDashboardPageState extends State<DriverDashboardPage> {
                 border: Border.all(color: const Color(0x4D22C55E), width: 2),
               ),
               child: ClipOval(
-                child: _driverPhoto != null
-                    ? Image.network(_driverPhoto!, fit: BoxFit.cover)
-                    : const Icon(
-                        Icons.person_rounded,
-                        color: _kPrimary,
-                        size: 22,
-                      ),
+                child: () {
+                  final imageProvider = buildProfileImageProvider(_driverPhoto);
+                  if (imageProvider != null) {
+                    return Image(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.person_rounded,
+                          color: _kPrimary,
+                          size: 22,
+                        );
+                      },
+                    );
+                  }
+                  return const Icon(
+                    Icons.person_rounded,
+                    color: _kPrimary,
+                    size: 22,
+                  );
+                }(),
               ),
             ),
             if (isOnline)
